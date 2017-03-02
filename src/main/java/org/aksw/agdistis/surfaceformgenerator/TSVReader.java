@@ -8,10 +8,13 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 /**
- * Reader for the tab separated values format (a basic table format without
- * escapings or anything where the rows are separated by tabulators).
+ * @author Daniel Gerber <dgerber@informatik.uni-leipzig.de>
+ * @author Diego Moussallem
+ * @author Ricardo Usbeck <usbeck@informatik.uni-leipzig.de> Reader for the tab
+ *         separated values format (a basic table format without escapings or
+ *         anything where the rows are separated by tabulators).
  **/
-// FIYME find out if some other class needs this class
+
 public class TSVReader implements Closeable {
 	final Scanner in;
 	String peekLine = null;

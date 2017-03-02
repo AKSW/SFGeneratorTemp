@@ -30,6 +30,11 @@ import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
+/**
+ * @author Daniel Gerber <dgerber@informatik.uni-leipzig.de>
+ * @author Diego Moussallem
+ * @author Ricardo Usbeck <usbeck@informatik.uni-leipzig.de>
+ */
 public class CreateLuceneIndexDbpediaSchema {
 	// FIXME we will assume we can work on an owl file directly
 	private static final String DBPEDIA_VERSION = "2016-04";

@@ -10,6 +10,11 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Daniel Gerber <dgerber@informatik.uni-leipzig.de>
+ * @author Diego Moussallem
+ * @author Ricardo Usbeck <usbeck@informatik.uni-leipzig.de>
+ */
 public class NtripleUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(NtripleUtil.class);

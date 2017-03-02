@@ -4,12 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 
- */
-
-/**
  * @author Daniel Gerber <dgerber@informatik.uni-leipzig.de>
- *
+ * @author Diego Moussallem
+ * @author Ricardo Usbeck <usbeck@informatik.uni-leipzig.de>
  */
 public class IndexDocument {
 

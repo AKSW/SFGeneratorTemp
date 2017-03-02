@@ -25,6 +25,8 @@ import org.apache.jena.rdf.model.StmtIterator;
 
 /**
  * @author Daniel Gerber <dgerber@informatik.uni-leipzig.de>
+ * @author Diego Moussallem
+ * @author Ricardo Usbeck <usbeck@informatik.uni-leipzig.de>
  */
 public class DBpediaSpotlightSurfaceFormGenerator {
 

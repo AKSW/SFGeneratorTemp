@@ -10,6 +10,8 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.lang.PipedRDFIterator;
 import org.apache.jena.riot.lang.PipedRDFStream;
 import org.apache.jena.riot.lang.PipedTriplesStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Daniel Gerber <dgerber@informatik.uni-leipzig.de>
@@ -18,34 +20,49 @@ import org.apache.jena.riot.lang.PipedTriplesStream;
  */
 public class NtripleUtil {
 
+	static Logger log = LoggerFactory.getLogger(NtripleUtil.class);
+
 	public static List<String[]> getSubjectAndObjectsFromNTriple(String filename, String replacePrefix) {
 
 		List<String[]> results = new ArrayList<String[]>();
+
 		PipedRDFIterator<Triple> iter = fileToStreamIterator(filename);
 
 		while (iter.hasNext()) {
 			Triple statement = iter.next();
-			results.add(new String[] { replacePrefix == null || replacePrefix.equals("") ? 
-					statement.getSubject().getURI() : 
-					statement.getSubject().getURI().replace(replacePrefix, ""),
-			        replacePrefix == null || replacePrefix.equals("") ? 
-			        		statement.getObject().getURI() : 
-			        		statement.getObject().getURI().replace(replacePrefix, ""),});
+			results.add(new String[] {
+					replacePrefix == null || replacePrefix.equals("") ? statement.getSubject().getURI()
+							: statement.getSubject().getURI().replace(replacePrefix, ""),
+					replacePrefix == null || replacePrefix.equals("") ? statement.getObject().getURI()
+							: statement.getObject().getURI().replace(replacePrefix, ""), });
+
 		}
+
 		iter.close();
-		return results;
+		return null;
+
+		// return results;
 	}
 
 	public static List<String> getSubjectsFromNTriple(String filename, String replacePrefix) {
 
 		List<String> results = new ArrayList<String>();
-		PipedRDFIterator<Triple> iter = fileToStreamIterator(filename);
 
+		PipedRDFIterator<Triple> iter = fileToStreamIterator(filename);
+		int i = 0;
 		while (iter.hasNext()) {
 			Triple statement = iter.next();
-			results.add(replacePrefix == null || replacePrefix.equals("") ? statement.getSubject().getURI() : statement.getSubject().getURI().replace(replacePrefix, ""));
+			i++;
+			if (i % 10000 == 0) {
+				log.debug("still reading " + filename);
+			}
+			results.add(replacePrefix == null || replacePrefix.equals("") ? statement.getSubject().getURI()
+					: statement.getSubject().getURI().replace(replacePrefix, ""));
+
+			
 		}
 		iter.close();
+
 		return results;
 	}
 

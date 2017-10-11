@@ -13,13 +13,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.andrewoma.dexx.collection.ArrayList;
 
 /**
  * @author Daniel Gerber <dgerber@informatik.uni-leipzig.de>
@@ -28,12 +31,14 @@ import org.apache.jena.rdf.model.StmtIterator;
  */
 public class DBpediaSpotlightSurfaceFormGenerator {
 
-	private static final Logger logger = Logger.getLogger("DBpediaSpotlightSurfaceFormGenerator");
+	private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightSurfaceFormGenerator.class);
 
-	private static final int MAXIMUM_SURFACE_FORM_LENGHT = 50;
+	private static int MAXIMUM_SURFACE_FORM_LENGHT = 50;
 
-	private static final List<String> STOPWORDS = Arrays.asList("but", "i", "a", "about", "an", "and", "are", "as", "at", "be", "by", "com", "for", "from", "how", "in", "is", "it", "of", "on", "or",
-	        "that", "the", "this", "to", "what", "when", "where", "who", "will", "with", "the", "www", "before", ",", "after", ";", "like", "and", "such");
+	private static final List<String> STOPWORDS = Arrays.asList("but", "i", "a", "about", "an", "and", "are", "as",
+			"at", "be", "by", "com", "for", "from", "how", "in", "is", "it", "of", "on", "or", "that", "the", "this",
+			"to", "what", "when", "where", "who", "will", "with", "the", "www", "before", ",", "after", ";", "like",
+			"and", "such");
 
 	private static Set<String> addNonAccentVersion(Set<String> surfaceForms) {
 		// remove all the accents in the surface forms and add that new label
@@ -92,7 +97,8 @@ public class DBpediaSpotlightSurfaceFormGenerator {
 
 	private static boolean isGoodSurfaceForm(String surfaceForm) {
 		if (surfaceForm.length() > MAXIMUM_SURFACE_FORM_LENGHT || surfaceForm.matches("^[\\W\\d]+$")) {
-			logger.log(Level.FINEST, "Surfaceform: " + surfaceForm + " is not a good surface form because its too long or regex match.");
+			logger.info(
+					"Surfaceform: " + surfaceForm + " is not a good surface form because its too long or regex match.");
 			return false;
 		}
 
@@ -107,11 +113,11 @@ public class DBpediaSpotlightSurfaceFormGenerator {
 	}
 
 	private static boolean isGoodUri(String uri) {
-		if (uri.startsWith("Liste_") || uri.contains("(Begriffsklärung)") || uri.startsWith("List_of_") || uri.contains("(Disambiguation)") || uri.contains("/") || uri.contains("%23")
-		        || uri.matches("^[\\W\\d]+$")) {
-			logger.log(Level.FINEST, "Uri: <" + uri + "> is not a good uri! / or %23 or regex");
-			return false;
-		}
+		if (uri.startsWith("Liste_") || uri.contains("(Begriffsklärung)") || uri.startsWith("List_of_")
+				|| uri.contains("(Disambiguation)")||uri.contains("%23")||uri.matches("^[\\W\\d]+$")) {
+						logger.info("Uri: <" + uri + "> is not a good uri! / or %23 or regex");
+						return false;
+					}
 		return true;
 	}
 
@@ -120,31 +126,25 @@ public class DBpediaSpotlightSurfaceFormGenerator {
 
 		Set<String> conceptUris = new HashSet<String>();
 		Set<String> badUris = new HashSet<String>();
-		List<String> redirectURIs = NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_REDIRECTS_FILE, "");
-		List<String> disambiguationURIs = NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_DISAMBIGUATIONS_FILE, "");
-		badUris.addAll(redirectURIs);
-		badUris.addAll(disambiguationURIs);
+		badUris.addAll(NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_REDIRECTS_FILE, ""));
+		badUris.addAll(NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_DISAMBIGUATIONS_FILE, ""));
 		System.gc();
 		logger.info("Finished reading redirects and disambiguations file for bad uri detection!");
 
 		// every uri which looks like a good uri and is not in the
 		// disambiguations or redirect files is a concept uri
 		// TODO check this
+		List<String> labelURIs = NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_LABELS_FILE, "");
+		for (String subjectUri : labelURIs) {
 
-		Model model = ModelFactory.createDefaultModel();
-		model.read(new FileInputStream(SurfaceFormGenerator.DBPEDIA_LABELS_FILE), null, "TTL");
-		StmtIterator statements = model.listStatements();
-		while (statements.hasNext()) {
-
-			Statement node = statements.next();
-			String subjectUri = node.getSubject().getURI();
-			String subjectUriWihtoutPrefix = subjectUri.substring(subjectUri.lastIndexOf("/") + 1);
+			String subjectUriWihtoutPrefix = subjectUri.substring(labelURIs.lastIndexOf("/") + 1);
 
 			if (isGoodUri(subjectUriWihtoutPrefix) && !badUris.contains(subjectUri)) {
 				conceptUris.add(subjectUri);
 			}
 		}
 		logger.info("Concept Uris construction complete! Total of: " + conceptUris.size() + " concept URIs found!");
+
 		Map<String, Set<String>> surfaceForms = new HashMap<String, Set<String>>();
 
 		// first add all uris of the concept uris
@@ -153,24 +153,29 @@ public class DBpediaSpotlightSurfaceFormGenerator {
 		}
 
 		logger.info("Finished adding all conceptUris: " + surfaceForms.size());
+		
+		
 
-		List<String[]> subjectToObject = NtripleUtil.getSubjectAndObjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_DISAMBIGUATIONS_FILE, "");
-		subjectToObject.addAll(NtripleUtil.getSubjectAndObjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_REDIRECTS_FILE, ""));
-		for (String[] subjectAndObject : subjectToObject) {
+		List<String> subjectToObject =  NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_DISAMBIGUATIONS_FILE, "");
+		subjectToObject.addAll(NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_REDIRECTS_FILE,""));
 
-			String subject = subjectAndObject[0];
-			String object = subjectAndObject[1];
+		for (String subjectAndObject: subjectToObject) {
 
+			String subject = subjectAndObject;
+			String object = subjectAndObject;
+		
+		
 			if (conceptUris.contains(object) && !object.contains("%")) {
 				addSurfaceForm(surfaceForms, object, subject.substring(subject.lastIndexOf("/") + 1));
 			}
 		}
 
-		List<String[]> subjectToObject2 = NtripleUtil.getSubjectAndObjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_INTER_LANGUAGE_LINKS_FILE, "");
-		for (String[] subjectAndObject : subjectToObject2) {
+		List<String> subjectToObject2 = NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_INTER_LANGUAGE_LINKS_FILE, "");
 
-			String subject = subjectAndObject[0];
-			String object = subjectAndObject[1];
+		for (String subjectAndObject : subjectToObject2) {
+
+			String subject = subjectAndObject;
+			String object = subjectAndObject;
 
 			String tempSubject = subject.substring(subject.lastIndexOf("/") + 1);
 			String tempObject = object.substring(object.lastIndexOf("/") + 1);
@@ -186,10 +191,12 @@ public class DBpediaSpotlightSurfaceFormGenerator {
 
 		// write the file
 		// TODO auf streamwriter mit encoding umschreiben
-		OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(SurfaceFormGenerator.SURFACE_FORMS_FILE, false), "UTF-8");
+		OutputStreamWriter writer = new OutputStreamWriter(
+				new FileOutputStream(SurfaceFormGenerator.SURFACE_FORMS_FILE, false), "UTF-8");
 
 		for (Map.Entry<String, Set<String>> entry : surfaceForms.entrySet()) {
 			writer.write(entry.getKey() + "\t" + StringUtils.join(addNonAccentVersion(entry.getValue()), "\t"));
+			writer.write("\n");
 		}
 
 		writer.close();

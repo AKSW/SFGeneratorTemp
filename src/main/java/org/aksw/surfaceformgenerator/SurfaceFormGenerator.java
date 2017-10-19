@@ -23,10 +23,10 @@ public class SurfaceFormGenerator {
 	public static String DIRECTORY = "data/2016-10/en/";
 	public static String LANGUAGE = "en";
 //downloaded files
-	public static String DBPEDIA_REDIRECTS_FILE = "" + DIRECTORY + "redirects_" + LANGUAGE + "_small.ttl";
-	public static String DBPEDIA_LABELS_FILE = "" + DIRECTORY + "labels_" + LANGUAGE + "_small.ttl";
-	public static String DBPEDIA_DISAMBIGUATIONS_FILE = "" + DIRECTORY + "disambiguations_" + LANGUAGE + "_small.ttl";
-	public static String DBPEDIA_INTER_LANGUAGE_LINKS_FILE = "" + DIRECTORY + "interlanguage_links_" + LANGUAGE + "_small.ttl";
+	public static String DBPEDIA_REDIRECTS_FILE = "" + DIRECTORY + "redirects_" + LANGUAGE + ".ttl";
+	public static String DBPEDIA_LABELS_FILE = "" + DIRECTORY + "labels_" + LANGUAGE + ".ttl";
+	public static String DBPEDIA_DISAMBIGUATIONS_FILE = "" + DIRECTORY + "disambiguations_" + LANGUAGE + ".ttl";
+//	public static String DBPEDIA_INTER_LANGUAGE_LINKS_FILE = "" + DIRECTORY + "interlanguage_links_" + LANGUAGE + ".ttl";
 //generated files
 	public static String SURFACE_FORMS_FILE = "" + DIRECTORY + LANGUAGE + "_surface_forms.tsv";
 	public static String FILTERED_LABELS_FILE = "" + DIRECTORY + "labels_" + LANGUAGE + "_filtered.ttl";
@@ -42,19 +42,22 @@ public class SurfaceFormGenerator {
 
 		DBpediaSpotlightSurfaceFormGenerator surfaceFormGenerator = new DBpediaSpotlightSurfaceFormGenerator();
 
-		 if (FILTER_SURFACE_FORMS) {
+		 /*if (FILTER_SURFACE_FORMS) {
+			 
 		 System.out.println("Starting to filter labels_" + LANGUAGE +".uri!");
 		 Set<String> badUris = new HashSet<String>();
+		 
 		 badUris.addAll(NtripleUtil.getSubjectsFromNTriple(DBPEDIA_REDIRECTS_FILE,""));
 		 System.out.println("Finished reading bad redirect uris!");
+		 
 		 badUris.addAll(NtripleUtil.getSubjectsFromNTriple(DBPEDIA_DISAMBIGUATIONS_FILE,""));
 		 System.out.println("Finished reading bad disambiguations uris!");
 	
 		 badUris.addAll(NtripleUtil.getSubjectsFromNTriple(DBPEDIA_INTER_LANGUAGE_LINKS_FILE,""));
 		 System.out.println("Finished reading bad interlinks uris!");
 		 
-	//	badUris.addAll(NtripleUtil.getSubjectsFromNTriple(ANCHOR_FILE,""));
-		System.out.println("Finished reading bad anchor uris!");
+//		 badUris.addAll(NtripleUtil.getSubjectsFromNTriple(ANCHOR_FILE,""));
+		 System.out.println("Finished reading bad anchor uris!");
 		
 		// write the file
 		 BufferedWriter writer = new BufferedWriter(new
@@ -89,7 +92,8 @@ public class SurfaceFormGenerator {
 		// them from a file
 		surfaceFormGenerator.createSurfaceFormFile();
 		}
-
+*/
+		surfaceFormGenerator.createSurfaceFormFile();
 	}
 
 }

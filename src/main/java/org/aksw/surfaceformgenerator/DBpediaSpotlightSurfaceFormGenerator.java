@@ -128,6 +128,7 @@ public class DBpediaSpotlightSurfaceFormGenerator {
 		Set<String> badUris = new HashSet<String>();
 		badUris.addAll(NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_REDIRECTS_FILE, ""));
 		badUris.addAll(NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_DISAMBIGUATIONS_FILE, ""));
+	
 		System.gc();
 		logger.info("Finished reading redirects and disambiguations file for bad uri detection!");
 
@@ -170,9 +171,9 @@ public class DBpediaSpotlightSurfaceFormGenerator {
 			}
 		}
 
-		List<String> subjectToObject2 = NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_INTER_LANGUAGE_LINKS_FILE, "");
+	//	List<String> subjectToObject2 = NtripleUtil.getSubjectsFromNTriple(SurfaceFormGenerator.DBPEDIA_INTER_LANGUAGE_LINKS_FILE, "");
 
-		for (String subjectAndObject : subjectToObject2) {
+	/*	for (String subjectAndObject : subjectToObject2) {
 
 			String subject = subjectAndObject;
 			String object = subjectAndObject;
@@ -185,7 +186,7 @@ public class DBpediaSpotlightSurfaceFormGenerator {
 					addSurfaceFormAnchor(surfaceForms, subject, object);
 				}
 			}
-		}
+		}*/
 
 		logger.info("Finished generation of surface forms.");
 

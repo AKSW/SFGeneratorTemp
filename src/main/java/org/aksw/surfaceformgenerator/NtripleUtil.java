@@ -49,13 +49,13 @@ public class NtripleUtil {
 		List<String> results = new ArrayList<String>();
 
 		PipedRDFIterator<Triple> iter = fileToStreamIterator(filename);
-		int i = 0;
+		//int i = 0;
 		while (iter.hasNext()) {
 			Triple statement = iter.next();
-			i++;
-			if (i % 10000 == 0) {
+			/*i++;
+			if (i % 10000 == 0) {*/
 				log.debug("still reading " + filename);
-			}
+			//}
 			results.add(replacePrefix == null || replacePrefix.equals("") ? statement.getSubject().getURI()
 					: statement.getSubject().getURI().replace(replacePrefix, ""));
 
